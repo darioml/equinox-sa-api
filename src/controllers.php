@@ -10,12 +10,16 @@ $app->get('/', function () use ($app) {
     return "Hello World";
 })->bind('homepage');
 
-$app->error(function (\Exception $e, $code) use ($app) {
-    if ($app['debug']) {
-        return;
-    }
 
-    return new Response(json_encode(
-        array("error" => $code)
-    ), $code);
+$app->mount('/customer', new SAEApi\Controller\Customer());
+
+
+$app->error(function (\Exception $e, $code) use ($app) {
+    if ($app['debug']) { return; }
+
+    $reply = array(
+        "error" => $code,
+        "message"=>$e->getMessage()
+    );
+    return new Response(json_encode($reply), $code);
 });
