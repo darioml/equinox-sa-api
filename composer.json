@@ -1,5 +1,19 @@
 {
+    "name": "darioml/equinox-sa-api",
+    "description":"API Package for eQuinox",
+    "license":"MIT",
+    "homepage": "http://github.com/darioml/equinox-sa-api",
+    "authors":[
+        {
+            "name":"Dario Magliocchetti",
+            "homepage":"http://dario-ml.com"
+        }
+    ],
     "require": {
-        "silex/silex": "1.*"
+        "silex/silex": "1.*",
+        "symfony/security": "~2.3"
+    },
+    "autoload": {
+        "psr-0": { "SAEApi": "src/" }
     }
 }
