@@ -1,3 +1,7 @@
 <?php
 
-// configure your app for the production environment
+
+// include the base configuration
+require __DIR__.'/base.php';
+
+require __DIR__.'/security.php'

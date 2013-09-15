@@ -2,8 +2,8 @@
 
 use Silex\Provider\MonologServiceProvider;
 
-// include the prod configuration
-require __DIR__.'/prod.php';
+// include the base configuration
+require __DIR__.'/base.php';
 
 // enable the debug mode
 $app['debug'] = true;

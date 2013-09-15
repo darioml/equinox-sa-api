@@ -7,11 +7,12 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 $app->get('/', function () use ($app) {
-    return "Hello World";
+    return "{'message':'Welcome to equinox API'}";
 })->bind('homepage');
 
 
 $app->mount('/customer', new SAEApi\Controller\Customer());
+$app->mount('/box',      new SAEApi\Controller\Customer());
 
 
 $app->error(function (\Exception $e, $code) use ($app) {

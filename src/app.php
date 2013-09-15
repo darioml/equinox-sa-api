@@ -1,19 +1,17 @@
 <?php
 
 use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation;
 
 $app = new Application();
-$app->register(new Silex\Provider\SecurityServiceProvider(), array(
-    'security.firewalls' => array(
-        'admin' => array(
-            'pattern' => '^/admin',
-            'http' => true,
-            'users' => array(
-                // raw password is foo
-                'admin' => array('ROLE_ADMIN', '5FZ2Z8QIkA7UTZ4BYkoC+GsReLf569mSKDsfods6LYQ8t+a8EW9oaircfMpmaLbPBh4FOBiiFyLfuZmTSUwzZg=='),
-            ),
-        ),
-    )
-));
+
+
+$app->before(function (Request $request) {
+    if (!in_array($request->server->get("REMOTE_ADDR"), array('127.0.0.1'))) {
+        echo "Wrong IP";
+        $app->abort();
+    }
+});
 
 return $app;
