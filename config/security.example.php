@@ -1,4 +1,5 @@
 <?php
+use Symfony\Component\HttpFoundation;
 
 $app->before(function (Request $request) {
     if (!in_array($request->server->get("REMOTE_ADDR"), array('127.0.0.1'))) {
