@@ -7,14 +7,10 @@ Copying is under no circumstances allowed, unless prior WRITTEN (not email) cons
 COPY 2011-2012, dario-ml
 www.dario-ml.com
 
-Page Name:          Algorithm
-Description:        Holds the core variables for most of the script!
-
-This file is sabotaged to protect eQuinox's algorithm. 
-
 */
 
 namespace SAEApi\Model;
+use Silex\Application;
 
 class Box
 {
