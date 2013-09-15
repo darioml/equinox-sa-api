@@ -34,7 +34,8 @@ class Customer implements ControllerProviderInterface {
             }
         });
 
-        $c->post('/{customerid}/codes/', function(Application $app, Request $request, $customerid) {
+        $c->post('/{customerid}/codes', function(Application $app, Request $request, $customerid) {
+            $codeCost = $request->get('paid');
             if (!$request->get('paid')) {
                 $app->abort('400', "Missing parameter");
             } else if (!is_numeric($request->get('paid'))) {
@@ -44,7 +45,7 @@ class Customer implements ControllerProviderInterface {
             if (!($text = $app['db']->fetchAssoc('SELECT * FROM customers WHERE customerID = ?', array($customerid)))) {
                 $app->abort('404', "invalid customer id");
             } else {
-                if ( ($paidCode = \SAEApi\Model\Box::getLength(substr($text['boxID'], 0, 1), $request->get('paid'))) == 0) {
+                if ( ($paidCode = \SAEApi\Model\Box::getLength(substr($text['boxID'], 0, 1), $codeCost)) == 0) {
                     $app->abort('400', "Paid amount must be enough to cover at least 2 days");
                 }
 
@@ -56,10 +57,12 @@ class Customer implements ControllerProviderInterface {
                     'generated' => time(),
                     'code'      => $app['equinox.algorithm']->generate(substr($text['boxID'], 1), $count+1, $paidCode),
                     'free'      => 0,
-                    'geninfo'   => 'api'
+                    'geninfo'   => 'api-0'
                 );
-                if ($app['db']->insert('codes', $update))
+                if ($app['db']->insert('codes', $update)) {
+                    $app['db']->executeUpdate('UPDATE customers SET paid = paid + ? WHERE boxID = ?', array($codeCost, $text['boxID']));
                     return json_encode($update);
+                }
                 else
                     return $app->abort('500', "Failed to insert into database");
             }
