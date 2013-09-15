@@ -13,10 +13,8 @@ class Customer implements ControllerProviderInterface {
     {
         $c = $app['controllers_factory'];
 
-        $c->get('/{customerid}', function (Application $app, $customerid) {
-            $text = $app['db']->fetchAssoc('SELECT * FROM customers WHERE customerID = ?', array($customerid));
-
-            if ($text === false) {
+        $c->get('/{customerid}/', function (Application $app, $customerid) {
+            if (!($text = $app['db']->fetchAssoc('SELECT * FROM customers WHERE customerID = ?', array($customerid)))) {
                 $app->abort('404', "invalid customer id");
             } else {
                 $text['codes'] = $app['db']->fetchAll('SELECT * FROM codes WHERE boxID = ? ORDER BY generated ASC', array($text['boxID']));
@@ -25,7 +23,7 @@ class Customer implements ControllerProviderInterface {
         })->value('customerid', '0');
 
 
-        $c->get('/{customerid}/codes', function(Application $app, Request $request, $customerid) {
+        $c->get('/{customerid}/codes/', function(Application $app, Request $request, $customerid) {
             $text = $app['db']->fetchAssoc('SELECT * FROM customers WHERE customerID = ?', array($customerid));
 
             if ($text === false) {
@@ -36,7 +34,7 @@ class Customer implements ControllerProviderInterface {
             }
         });
 
-        $c->post('/{customerid}/codes', function(Application $app, Request $request, $customerid) {
+        $c->post('/{customerid}/codes/', function(Application $app, Request $request, $customerid) {
             if (!$request->get('paid')) {
                 $app->abort('400', "Missing parameter");
             } else if (!is_numeric($request->get('paid'))) {
