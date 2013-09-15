@@ -24,6 +24,18 @@ class Customer implements ControllerProviderInterface {
             }
         })->value('customerid', '0');
 
+
+        $c->get('/{customerid}/codes', function(Application $app, Request $request, $customerid) {
+            $text = $app['db']->fetchAssoc('SELECT * FROM customers WHERE customerID = ?', array($customerid));
+
+            if ($text === false) {
+                $app->abort('404', "invalid customer id");
+            } else {
+                $text['codes'] = $app['db']->fetchAll('SELECT * FROM codes WHERE boxID = ? ORDER BY generated ASC', array($text['boxID']));
+                return json_encode($text['codes']);
+            }
+        });
+
         $c->post('/{customerid}/codes', function(Application $app, Request $request, $customerid) {
             if (!$request->get('paid')) {
                 $app->abort('400', "Missing parameter");
@@ -54,6 +66,7 @@ class Customer implements ControllerProviderInterface {
                     return $app->abort('500', "Failed to insert into database");
             }
         });
+
 
         return $c;
     }
