@@ -20,3 +20,14 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
         ),
     )
 ));
+
+$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+    'db.options' => array(
+        'driver'   => 'pdo_mysql',
+        'host'      => 'localhost',
+        'dbname'    => 'equinox',
+        'user'      => 'user',
+        'password'  => 'password',
+        'charset'   => 'utf8',
+    ),
+));
