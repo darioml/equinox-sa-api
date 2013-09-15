@@ -13,7 +13,7 @@ class Box implements ControllerProviderInterface {
     {
         $c = $app['controllers_factory'];
 
-        $c->get('/{boxid}/', function (Application $app, $boxid) {
+        $c->get('/{boxid}', function (Application $app, $boxid) {
             if (!preg_match("/^(s|l)[0-9]{5}$/", $boxid))
                 $app->abort('400', "Invalid box ID");
             
@@ -27,7 +27,7 @@ class Box implements ControllerProviderInterface {
             return json_encode($return);
         })->value('boxid', '0');
 
-        $c->get('/{boxid}/codes/', function (Application $app, $boxid) {
+        $c->get('/{boxid}/codes', function (Application $app, $boxid) {
             if (!preg_match("/^(s|l)[0-9]{5}$/", $boxid))
                 $app->abort('400', "Invalid box ID");
             $return = array();
@@ -37,7 +37,7 @@ class Box implements ControllerProviderInterface {
             return json_encode($return);
         })->value('boxid', '0');
 
-        $c->post('/{boxid}/codes/', function (Application $app, Request $request, $boxid) {
+        $c->post('/{boxid}/codes', function (Application $app, Request $request, $boxid) {
             $codeCost = $request->get('paid');
             if (!preg_match("/^(s|l)[0-9]{5}$/", $boxid)) {
                 $app->abort('400', "Invalid box ID");

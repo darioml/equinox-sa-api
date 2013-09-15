@@ -13,7 +13,7 @@ class Customer implements ControllerProviderInterface {
     {
         $c = $app['controllers_factory'];
 
-        $c->get('/{customerid}/', function (Application $app, $customerid) {
+        $c->get('/{customerid}', function (Application $app, $customerid) {
             if (!($text = $app['db']->fetchAssoc('SELECT * FROM customers WHERE customerID = ?', array($customerid)))) {
                 $app->abort('404', "invalid customer id");
             } else {
@@ -23,7 +23,7 @@ class Customer implements ControllerProviderInterface {
         })->value('customerid', '0');
 
 
-        $c->get('/{customerid}/codes/', function(Application $app, Request $request, $customerid) {
+        $c->get('/{customerid}/codes', function(Application $app, Request $request, $customerid) {
             $text = $app['db']->fetchAssoc('SELECT * FROM customers WHERE customerID = ?', array($customerid));
 
             if ($text === false) {
