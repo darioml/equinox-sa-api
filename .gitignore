@@ -2,3 +2,4 @@ composer.phar
 vendor/
 *.DS_Store
 config/security.php
+src/SAEApi/Model/realAlgorithm.php
