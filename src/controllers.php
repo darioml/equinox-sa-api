@@ -12,7 +12,7 @@ $app->get('/', function () use ($app) {
 
 
 $app->mount('/customer', new SAEApi\Controller\Customer());
-$app->mount('/box',      new SAEApi\Controller\Customer());
+$app->mount('/box',      new SAEApi\Controller\Box());
 
 
 $app->error(function (\Exception $e, $code) use ($app) {
