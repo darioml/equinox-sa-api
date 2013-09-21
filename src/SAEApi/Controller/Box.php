@@ -69,6 +69,31 @@ class Box implements ControllerProviderInterface {
                 return $app->abort('500', "Failed to insert into database");
         })->value('boxid', '0');
 
+        $c->get('/{boxid}/initiate', function (Application $app, Request $request, $boxid) {
+            $count = $app['db']->fetchArray('SELECT COUNT(*) FROM codes WHERE boxID = ?', array($boxid));
+
+            if (!preg_match("/^(s|l)[0-9]{5}$/", $boxid)) {
+                $app->abort('400', "Invalid box ID");
+            } else if (($customer = $app['db']->fetchAssoc('SELECT * FROM customers WHERE boxID = ?', array($boxid)))) {
+                $app->abort('400', "Box must not be linked to any customer");
+            } else if ($count[0] > 0) {
+                $app->abort('400', "Box must not have any codes");
+            }
+
+            $update = array(
+                'boxID'     => $boxid,
+                'generated' => time(),
+                'code'      => $app['equinox.algorithm']->generate(substr($boxid, 1), 0, 1),
+                'free'      => 1,
+                'geninfo'   => 'api-2'
+            );
+            if ($app['db']->insert('codes', $update)) {
+                return json_encode($update);
+            }
+            else
+                return $app->abort('500', "Failed to insert into database");
+        })->value('boxid', '0');
+
         return $c;
     }
 
