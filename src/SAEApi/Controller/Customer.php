@@ -18,6 +18,11 @@ class Customer implements ControllerProviderInterface {
                 $app->abort('404', "invalid customer id");
             } else {
                 $text['codes'] = $app['db']->fetchAll('SELECT * FROM codes WHERE boxID = ? ORDER BY generated ASC', array($text['boxID']));
+                foreach ($text['codes'] as $key=>$value)
+                {
+                    $code = new \SAEApi\Model\Code($value['code']);
+                    $text['codes'][$key]['codeinfo'] = $code->getData();
+                }
                 return json_encode($text);
             }
         })->value('customerid', '0');

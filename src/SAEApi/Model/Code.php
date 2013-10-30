@@ -16,10 +16,19 @@ namespace SAEApi\Model;
 
 class Code
 {
-    function __construct()
+    function __construct($code)
     {
-
+        $this->algorithm = new \SAEApi\Model\Algorithm();
+        $this->code = $code;
     }
+
+    function getData() {
+        return array(
+            'unlock_time_code' => $this->algorithm->GetUnlockDays($this->code),
+            'unlock_count' => $this->algorithm->GetUnlockNumber($this->code)
+        );
+    }
+
 
     static function getLength($size, &$paid) {
         if ($size == 's') {
