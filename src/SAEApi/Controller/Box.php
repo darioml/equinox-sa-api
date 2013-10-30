@@ -57,7 +57,7 @@ class Box implements ControllerProviderInterface {
             $update = array(
                 'boxID'     => $boxid,
                 'generated' => time(),
-                'code'      => $app['equinox.algorithm']->generate(substr($boxid, 1), $count, $paidCode),
+                'code'      => $app['equinox.algorithm']->generate(substr($boxid, 1), $count + 1, $paidCode),
                 'free'      => 0,
                 'geninfo'   => 'api-1'
             );
