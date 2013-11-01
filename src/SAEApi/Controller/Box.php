@@ -7,35 +7,36 @@ use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
+
+
 class Box implements ControllerProviderInterface {
 
     public function connect(Application $app)
     {
         $c = $app['controllers_factory'];
 
-        $c->get('/{boxid}', function (Application $app, $boxid) {
-            if (!preg_match("/^(s|l)[0-9]{5}$/", $boxid))
-                $app->abort('400', "Invalid box ID");
-            
-            $return = array();
-            if ($owner = $app['db']->fetchAssoc('SELECT * FROM customers WHERE boxID = ?', array($boxid))) {
-                $return['customer'] = $owner;
-            }
-            if ($codes = $app['db']->fetchAll('SELECT * FROM codes WHERE boxID = ? ORDER BY generated ASC', array($boxid))) {
-                $return['codes'] = $codes;
-            }
-            return json_encode($return);
-        })->value('boxid', '0');
+        /* ********
+            Providers
+        ******** */
 
-        $c->get('/{boxid}/codes', function (Application $app, $boxid) {
-            if (!preg_match("/^(s|l)[0-9]{5}$/", $boxid))
-                $app->abort('400', "Invalid box ID");
-            $return = array();
-            if ($codes = $app['db']->fetchAll('SELECT * FROM codes WHERE boxID = ? ORDER BY generated ASC', array($boxid))) {
-                $return['codes'] = $codes;
-            }
-            return json_encode($return);
-        })->value('boxid', '0');
+        $BoxProvider = function($box) use ($app) {
+            return new \SAEApi\Model\Box($app, $box);
+        };
+
+        /* *******
+            Routes
+        ******* */
+
+        $c->get('/{box}', function (Application $app, $box) {
+            return json_encode($box->getInfo());
+        })->convert('box', $BoxProvider);
+
+
+        $c->get('/{box}/codes', function (Application $app, $box) {
+            return json_encode($box->getCodes());
+        })->convert('box', $BoxProvider);
+
+
 
         $c->post('/{boxid}/codes', function (Application $app, Request $request, $boxid) {
             $codeCost = $request->get('paid');
@@ -83,7 +84,7 @@ class Box implements ControllerProviderInterface {
             $update = array(
                 'boxID'     => $boxid,
                 'generated' => time(),
-                'code'      => $app['equinox.algorithm']->generate(substr($boxid, 1), 0, 1),
+                'code'      => $app['equinox.algorithm']->generate(substr($boxid, 1), 1, 1),
                 'free'      => 1,
                 'geninfo'   => 'api-2'
             );

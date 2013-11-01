@@ -25,6 +25,16 @@ class Customer
         $this->customer = $app['db']->fetchAssoc('SELECT * FROM customers WHERE customerID = ?', array($customerid));
     }
 
+    function getInfo()
+    {
+        return $this->customer;
+    }
+
+    function getId()
+    {
+        return $this->customer['customerID'];
+    }
+
     function isValid()
     {
         if ($this->customer == false)

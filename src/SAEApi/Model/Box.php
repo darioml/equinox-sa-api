@@ -11,12 +11,67 @@ www.dario-ml.com
 
 namespace SAEApi\Model;
 use Silex\Application;
+use SAEApi\Model\Customer;
 
 class Box
 {
-    function __construct()
-    {
+    private $app,
+            $boxID,
+            $boxOwner,
+            $boxCodes;
 
+    function __construct(Application $app, $boxID)
+    {
+        if (!preg_match("/^(s|l)[0-9]{5}$/", $boxID)) {
+            $app->abort('400', "Invalid box ID");
+        }
+
+        $this->app = $app;
+        $this->boxID = $boxID;
+    }
+
+    function getInfo() {
+        if (!$this->boxOwner) {
+            $owner = $this->app['db']->fetchAssoc('SELECT * FROM customers WHERE boxID = ?', array($this->boxID));
+            $this->boxOwner = new Customer($this->app, $owner['customerID']);
+        }
+        if (!$this->boxCodes) {
+            $codes = $this->app['db']->fetchAll('SELECT * FROM codes WHERE boxID = ? ORDER BY generated ASC', array($this->boxID));
+            foreach ($codes as $code) {
+                $this->boxCodes[] = new Code($this->app, $code['code']);
+            }
+        }
+
+        foreach ($this->boxCodes as $codes) {
+            $returnCode[] = $codes->getInfo();
+        }
+        return array(
+            'boxID' => $this->boxID,
+            'customer' => $this->boxOwner->getInfo(),
+            'codes' => $returnCode
+        );
+    }
+
+    function getCodes() {
+        if (!$this->boxOwner) {
+            $owner = $this->app['db']->fetchAssoc('SELECT * FROM customers WHERE boxID = ?', array($this->boxID));
+            $this->boxOwner = new Customer($this->app, $owner['customerID']);
+        }
+        if (!$this->boxCodes) {
+            $codes = $this->app['db']->fetchAll('SELECT * FROM codes WHERE boxID = ? ORDER BY generated ASC', array($this->boxID));
+            foreach ($codes as $code) {
+                $this->boxCodes[] = new Code($this->app, $code['code']);
+            }
+        }
+
+        foreach ($this->boxCodes as $codes) {
+            $returnCode[] = $codes->getInfo();
+        }
+        return array(
+            'boxID' => $this->boxID,
+            'customer' => $this->boxOwner->getId(),
+            'codes' => $returnCode
+        );
     }
 
     static function getLength($size, &$paid) {
